@@ -4,10 +4,18 @@ Menghias hasil screenshot maupun gambar lainnya.
 
 ## instalasi
 ```bash
-cd &&
-curl https://raw.githubusercontent.com/annzc/shot-magick/main/shot-magick \
-> shot-magick
+cd
+```
+```bash
+pkg up -y && pkg i imagemagick -y
+```
+```bash
+curl https://raw.githubusercontent.com/annzc/shot-magick/main/shot-magick > shot-magick
+```
+```bash
 chmod +x shot-magick
+```
+```bash
 ./shot-magick gambar.jpg jpg
 # atau
 bash shot-magick ... ...
