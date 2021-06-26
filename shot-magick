@@ -9,12 +9,12 @@ apani="\e[96m
     \e[93m
     CARA PAKAI
     ----------
-    \e[92m./sshott.sh [gambar.ext] [ext]
+    \e[92m./shot-magick [gambar.ext] [ext]
     \e[0m(atau)
-    \e[92mbash sshott.sh [gambar.ext] [ext]
+    \e[92mbash shot-magick [gambar.ext] [ext]
     \e[93m
     contoh:
-    \e[92mbash sshott.sh img.png png\e[0m
+    \e[92mbash shot-magick img.png png\e[0m
 "
 
 main() {
