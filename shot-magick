@@ -1,0 +1,65 @@
+#!/data/data/com.termux/files/usr/bin/env bash
+name=$(echo $1 | sed "s/.$2$//")
+hasil="${name}_SS.$2"
+png=".buff.png"
+
+apani="\e[96m
+    ini tuh nganu...
+    Buat nganu screenshot biasanya.
+    \e[93m
+    CARA PAKAI
+    ----------
+    \e[92m./sshott.sh [gambar.ext] [ext]
+    \e[0m(atau)
+    \e[92mbash sshott.sh [gambar.ext] [ext]
+    \e[93m
+    contoh:
+    \e[92mbash sshott.sh img.png png\e[0m
+"
+
+main() {
+  if [ $2 ]; then
+    convert $1 $png
+    _rounded_corner_
+    _shadow_
+    _border_
+    convert $png $hasil
+    rm $png
+  elif [[ "$1" == "--help" ]]; then
+    ( echo -e "$apani"; exit 1 )
+  elif [ $1 ]; then
+    (
+      echo -e "\e[91m\nTolong sertakan ekstensi gambar\nlihat: [--help]
+    \e[0m";
+      exit 1;
+    )
+  else
+    ( echo -e "$apani"; exit 1 )
+  fi
+}
+
+_rounded_corner_() {
+  convert $png \
+    \( +clone  -alpha extract \
+      -draw 'fill black polygon 0,0 0,15 15,0 fill white circle 15,15 15,0' \
+      \( +clone -flip \) -compose Multiply -composite \
+      \( +clone -flop \) -compose Multiply -composite \
+    \) -alpha off -compose CopyOpacity -composite $png
+}
+
+_shadow_() {
+  convert $png \
+    \( +clone -background '#61afef' -shadow 50x20+0+10 \) \
+    +swap \
+    -background none \
+    -layers merge \
+    +repage $png
+}
+
+_border_() {
+  convert $png \
+    -bordercolor '#0e1419' \
+    -border 20 $png
+}
+
+main $1 $2
