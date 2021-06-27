@@ -138,7 +138,7 @@ main() {
       echo final convert...
       convert $_PNG $_HASIL
       rm $_PNG
-    } 2>/dev/null &&
+    } &&
       echo -e "
       Detail~~~
 
