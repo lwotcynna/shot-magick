@@ -1,4 +1,5 @@
 # shot-magick
+Using imagemagick v7.1.0
 Menghias hasil screenshot maupun gambar lainnya.
 Katanya biar mirip hasil screenshot MacOS =)
 ### Light Mode
@@ -57,3 +58,9 @@ sesuaikan font Anda dengan font yang tersedia.
 
 ## ingfo
 MIT licence
+
+# HARDLY INSPIRED BY 💡
+* [Rizqi Nur Assyaufi](https://github.com/bandithijo) on [this](https://bandithijo.github.io/blog/membuat-hasil-screenshot-linux-seperti-pada-macos)
+* [awesome-flameshot](https://github.com/berrabe/awesome-flameshot)
+
+
