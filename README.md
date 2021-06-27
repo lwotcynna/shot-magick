@@ -1,5 +1,5 @@
 # shot-magick
-Using imagemagick v7.1.0
+Using imagemagick v7.1.0<br>
 Menghias hasil screenshot maupun gambar lainnya.
 Katanya biar mirip hasil screenshot MacOS =)
 ### Light Mode
