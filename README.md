@@ -1,11 +1,12 @@
 # shot-magick
 Menghias hasil screenshot maupun gambar lainnya.
-<img src="https://github.com/annzc/shot-magick/raw/main/IMG_20210626_072350_SS.jpg" />
+Katanya biar mirip hasil screenshot MacOS =)
+### Light Mode
+<img src="" />
+### Dark Mode
+<img src="" />
 
 ## instalasi
-```bash
-cd
-```
 ```bash
 pkg up -y && pkg i imagemagick -y
 ```
@@ -16,7 +17,31 @@ curl https://raw.githubusercontent.com/annzc/shot-magick/main/shot-magick > shot
 chmod +x shot-magick
 ```
 ```bash
-./shot-magick gambar.jpg jpg
+./shot-magic
 # atau
-bash shot-magick ... ...
+bash shot-magick
 ```
+
+## NOTE
+`shot-magick beta version 0.1`<br>
+Beberapa fitur terutama `-usertag` masih tidak stabil(!)<br><br>
+Cara lain untuk menggunakan fitur `-usertag` adalah dengan membuat file `.usertag` di dalam direktori yang sama.<br><br>
+Contoh:<br>
+```sh
+echo "Shooter: @akugans $(date)" > .usertag
+# output
+: Shooter: @akugans Sun Jun 27 06:42:19 WIB 2021
+```
+dan jangan lupa sertakan argumen `-usertag` untuk menggunakan tag buatan sendiri tadi.<br><br>
+Hapus file `.usertag` untuk menggunakan tag input mode.<br>
+Atau edit sendiri variabel `$_DEFAULT_TAG` yang ada di dalam script.
+
+ciao!
+
+## automation (coming soon?)
+Untuk automasi, silahkan pakai `while :` / `while true` statement di dalam direktori dimana screenshot disimpan
+
+<img src"" />
+
+## ingfo
+MIT licence

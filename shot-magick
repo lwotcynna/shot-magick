@@ -1,65 +1,190 @@
-#!/data/data/com.termux/files/usr/bin/env bash
-name=$(echo $1 | sed "s/.$2$//")
-hasil="${name}_SS.$2"
-png=".buff.png"
+#!/usr/bin/env bash
+# Github  : https://github.com/annzc
+# telegram: @bluetterphiley
+# MIT LICENSE <3
 
-apani="\e[96m
-    ini tuh nganu...
-    Buat nganu screenshot biasanya.
-    \e[93m
-    CARA PAKAI
-    ----------
-    \e[92m./shot-magick [gambar.ext] [ext]
-    \e[0m(atau)
-    \e[92mbash shot-magick [gambar.ext] [ext]
-    \e[93m
-    contoh:
-    \e[92mbash shot-magick img.png png\e[0m
+R="\e[91m"
+G="\e[92m"
+B="\e[94m"
+Y="\e[93m"
+C="\e[96m"
+O="\e[0m"
+_VERSI=0.1-beta
+_PROG="shot-magick"
+_GITHUB="https://github.com/annzc/shot-magick"
+
+_OPSI=( "-rounded" "-dark" "-usertag" )
+_OPSI_USER=( "$2" "$3" "$4" "$5" )
+_DEFAULT_TAG="$(whoami)@$(uname -n) $(date +'%d-%m-%Y %r')"
+
+[[ ${_OPSI_USER[*]} =~ "-notag" ]] &&
+  _IS_TAG=false || _IS_TAG=true
+
+if [[ ${_OPSI_USER[*]} =~ "-usertag" ]]; then
+  if [ -f .usertag ]; then
+    echo $Y"[*] menggunakan tag dari $C./.usertag$O\n"
+    _USER_TAG="$(cat .usertag)"
+  else
+    echo -ne $Y"input user tag:\n>$O "
+    read -e _usertag
+    _USER_TAG="$(echo $_usertag)"
+  fi
+fi || echo $Y"[!] Using default tag"$O &&
+  _USER_TAG="$_DEFAULT_TAG"
+
+[[ ${_OPSI_USER[*]} =~ "-rounded" ]] &&
+  _IS_ROUNDED=true || _IS_ROUNDED=false
+
+[[ ${_OPSI_USER[*]} =~ "-dark" ]] &&
+  _MODE="dark" || _MODE="light"
+
+[[ $_MODE == "dark" ]] &&
+  _BORDER_COLOR="#0e1419" _SHADOW_COLOR="#61afef" ||
+  _BORDER_COLOR="#ffffff" _SHADOW_COLOR="#000000"
+
+_EXT=$(echo $1 | awk -F "." '{print $NF}')
+_NAMA=$(echo $1 | sed "s/.$_EXT$//")
+_HASIL="${_NAMA}_SS.$_EXT"
+_PNG=".buff.png"
+
+_apani="
+$C $_PROG v$_VERSI
+$O  Program sederhana untuk mempercantik? hasil screenshot.
 "
 
+_apani_cara_pakai="
+$Y CARA PAKAI
+$G  ./shot-magick [gambar.ext] [OPSI]
+"
+
+_apani_contoh="
+$Y Contoh:
+$G  ./shot-magick gambarku.jpg -dark
+  ./shot-magick gambarku.jpg -rounded -dark
+  ./shot-magick gambarku.jpg -dark -usertag
+$O"
+
+_apani_opsi="$Y
+ OPSI$C
+  -rounded       - menumpulkan bagian sudut gambar
+  -dark          - border mode gelap
+  -usertag       - menyesuaikan bagian isi tag
+  -notag         - tidak ada tag
+"
+
+_apani_lainnya="$Y
+-help           - menampilkan halaman bantuan
+-version        - menampilkan versi program
+$O"
+
+_help_() {
+  echo -e "\
+    $_apani\
+    $_apani_cara_pakai\
+    $_apani_opsi\
+    $_apani_contoh"
+}
+
+_version_() {
+  echo
+  echo -e $G"$_PROG v$_VERSI\n${O}Github: ${B}$_GITHUB"$O
+  echo
+}
+
+_noarg_() {
+  echo -e "$_apani_lainnya";
+  exit 1
+}
+
+_unknownarg_() {
+  [[ ${_OPSI[*]} =~ "$1" ]] &&
+    echo -e $R"penggunaan salah! coba dengan -help" ||
+    echo -e $R"tidak ditemukan argumen $Y'$1'$R. lihat $Y'-help'$O"
+}
+
+_nofile_() {
+  echo -e $R"file $Y'$1'$R tidak dapat ditemukan"$O;
+  return 1
+}
+
 main() {
-  if [ $2 ]; then
-    convert $1 $png
-    _rounded_corner_
-    _shadow_
-    _border_
-    convert $png $hasil
-    rm $png
-  elif [[ "$1" == "--help" ]]; then
-    ( echo -e "$apani"; exit 1 )
-  elif [ $1 ]; then
-    (
-      echo -e "\e[91m\nTolong sertakan ekstensi gambar\nlihat: [--help]
-    \e[0m";
-      exit 1;
-    )
+  if [ ! $1 ]; then
+    _noarg_
+  elif [[ "$1" == "-help" ]]; then
+    _help_
+  elif [[ "$1" == "-version" ]]; then
+    _version_
+  elif [[ $1 =~ ^[-]+ ]]; then
+    _unknownarg_ $1
+  elif [ ! -f $1 ]; then
+    _nofile_ $1
   else
-    ( echo -e "$apani"; exit 1 )
+    {
+      echo converting...
+      convert $1 $_PNG
+
+      $_IS_ROUNDED && echo rounded corner... &&
+        _rounded_corner_
+
+      echo shadowing...
+      _shadow_
+
+      echo border...
+      _border_
+
+      $_IS_TAG && echo adding tag... &&
+        _tag_
+
+      echo final convert...
+      convert $_PNG $_HASIL
+      rm $_PNG
+    } 2>/dev/null &&
+      echo -e "
+      Detail~~~
+
+      Nama File  : $1
+      Rounded    : $_IS_ROUNDED
+      Mode       : $_MODE
+      Tag        : $($_IS_TAG && echo $_USER_TAG || echo notag)
+      File Hasil : $_HASIL
+      " | sed 's/^[ \t]*//g' ||
+        ( echo -e $R"Konversi gagal :("$O; exit 1; )
   fi
 }
 
 _rounded_corner_() {
-  convert $png \
+  convert $_PNG \
     \( +clone  -alpha extract \
-      -draw 'fill black polygon 0,0 0,15 15,0 fill white circle 15,15 15,0' \
+      -draw 'fill black polygon 0,0 0,10 10,0 fill white circle 10,10 10,0' \
       \( +clone -flip \) -compose Multiply -composite \
       \( +clone -flop \) -compose Multiply -composite \
-    \) -alpha off -compose CopyOpacity -composite $png
+    \) -alpha off -compose CopyOpacity -composite $_PNG
 }
 
 _shadow_() {
-  convert $png \
-    \( +clone -background '#61afef' -shadow 50x20+0+10 \) \
+  convert $_PNG \
+    \( +clone -background "$_SHADOW_COLOR" -shadow 50x10+0+10 \) \
     +swap \
     -background none \
     -layers merge \
-    +repage $png
+    +repage $_PNG
 }
 
 _border_() {
-  convert $png \
-    -bordercolor '#0e1419' \
-    -border 20 $png
+  convert $_PNG \
+    -bordercolor "$_BORDER_COLOR" \
+    -border 10 $_PNG
 }
 
-main $1 $2
+_tag_() {
+  echo -en "  $_USER_TAG  " |
+    convert $_PNG \
+    -gravity South \
+    -pointsize 13 \
+    -fill '#0E1419' \
+    -undercolor '#ABB2BF' \
+    -font JetBrains-Mono-Regular-Nerd-Font-Complete-Mono \
+    -annotate +0+22 @- $_PNG
+}
+
+main $1 $2 $3 $4
