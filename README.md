@@ -8,6 +8,7 @@ Katanya biar mirip hasil screenshot MacOS =)
 <img src="https://github.com/annzc/shot-magick/raw/main/img/dark-mode.png" />
 
 ## instalasi
+* Termux
 ```bash
 pkg up -y && pkg i imagemagick -y
 ```
