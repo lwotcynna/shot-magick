@@ -2,9 +2,10 @@
 Menghias hasil screenshot maupun gambar lainnya.
 Katanya biar mirip hasil screenshot MacOS =)
 ### Light Mode
-<img src="" />
+<img src="https://github.com/annzc/shot-magick/raw/main/img/light-mode.png" />
+
 ### Dark Mode
-<img src="" />
+<img src="https://github.com/annzc/shot-magick/raw/main/img/dark-mode.png" />
 
 ## instalasi
 ```bash
@@ -39,9 +40,9 @@ Atau edit sendiri variabel `$_DEFAULT_TAG` yang ada di dalam script.
 ciao!
 
 ## automation (coming soon?)
-Untuk automasi, silahkan pakai `while :` / `while true` statement di dalam direktori dimana screenshot disimpan
+Untuk automasi, silahkan pakai `while :` / `while true` statement di dalam direktori dimana screenshot disimpan.
 
-<img src"" />
+<img src="https://raw.githubusercontent.com/annzc/shot-magick/main/img/automasi.png" />
 
 ## ingfo
 MIT licence
