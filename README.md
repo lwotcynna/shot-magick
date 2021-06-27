@@ -45,5 +45,15 @@ Untuk automasi, silahkan pakai `while :` / `while true` statement di dalam direk
 
 <img src="https://raw.githubusercontent.com/annzc/shot-magick/main/img/automasi.png" />
 
+# TROUBLESHOOTING
+Jika terdapat error yang berhubungan dengan font,
+biasanya karena nama font tidak dapat ditemukan
+oleh sistem.<br>
+Untuk melihat list font yang tersedia, jalankan perintah berikut:
+```bash
+magick convert -list font | grep -iE 'font:.*'
+```
+sesuaikan font Anda dengan font yang tersedia.
+
 ## ingfo
 MIT licence
