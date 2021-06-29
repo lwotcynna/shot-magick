@@ -1,12 +1,15 @@
 # shot-magick
+Using imagemagick v7.1.0<br>
 Menghias hasil screenshot maupun gambar lainnya.
 Katanya biar mirip hasil screenshot MacOS =)
 ### Light Mode
-<img src="" />
+<img src="https://github.com/annzc/shot-magick/raw/main/img/light-mode.png" />
+
 ### Dark Mode
-<img src="" />
+<img src="https://github.com/annzc/shot-magick/raw/main/img/dark-mode.png" />
 
 ## instalasi
+* Termux
 ```bash
 pkg up -y && pkg i imagemagick -y
 ```
@@ -39,9 +42,25 @@ Atau edit sendiri variabel `$_DEFAULT_TAG` yang ada di dalam script.
 ciao!
 
 ## automation (coming soon?)
-Untuk automasi, silahkan pakai `while :` / `while true` statement di dalam direktori dimana screenshot disimpan
+Untuk automasi, silahkan pakai `while :` / `while true` statement di dalam direktori dimana screenshot disimpan.
 
-<img src"" />
+<img src="https://raw.githubusercontent.com/annzc/shot-magick/main/img/automasi.png" />
+
+# TROUBLESHOOTING
+Jika terdapat error yang berhubungan dengan font,
+biasanya karena nama font tidak dapat ditemukan
+oleh sistem.<br>
+Untuk melihat list font yang tersedia, jalankan perintah berikut:
+```bash
+magick convert -list font | grep -iE 'font:.*'
+```
+sesuaikan font Anda dengan font yang tersedia.
 
 ## ingfo
 MIT licence
+
+# HARDLY INSPIRED BY 💡
+* [Rizqi Nur Assyaufi](https://github.com/bandithijo) on [this](https://bandithijo.github.io/blog/membuat-hasil-screenshot-linux-seperti-pada-macos)
+* [awesome-flameshot](https://github.com/berrabe/awesome-flameshot)
+
+

@@ -181,6 +181,7 @@ _convert_() {
 }
 
 main() {
+<<<<<<< HEAD
   if [[ "$1" == "" ]]; then
     _help_ && exit 1;
   elif [[ $1 =~ [-]* ]]; then
@@ -197,6 +198,49 @@ main() {
       [[ ${_OPTIONS[*]} =~ $_FILE ]] &&
       _nofile_ $_FILE             &&
       exit 1;
+=======
+  if [ ! $1 ]; then
+    _noarg_
+  elif [[ "$1" == "-help" ]]; then
+    _help_
+  elif [[ "$1" == "-version" ]]; then
+    _version_
+  elif [[ $1 =~ ^[-]+ ]]; then
+    _unknownarg_ $1
+  elif [ ! -f $1 ]; then
+    _nofile_ $1
+  else
+    {
+      echo converting...
+      convert $1 $_PNG
+
+      $_IS_ROUNDED && echo rounded corner... &&
+        _rounded_corner_
+
+      echo shadowing...
+      _shadow_
+
+      echo border...
+      _border_
+
+      $_IS_TAG && echo adding tag... &&
+        _tag_
+
+      echo final convert...
+      convert $_PNG $_HASIL
+      rm $_PNG
+    } &&
+      echo -e "
+      Detail~~~
+
+      Nama File  : $1
+      Rounded    : $_IS_ROUNDED
+      Mode       : $_MODE
+      Tag        : $($_IS_TAG && echo $_USER_TAG || echo notag)
+      File Hasil : $_HASIL
+      " | sed 's/^[ \t]*//g' ||
+        ( echo -e $R"Konversi gagal :("$O; exit 1; )
+>>>>>>> 79475a6adeb11ca57bebadd94dce069aef1dd9e3
   fi
 }
 
