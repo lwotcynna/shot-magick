@@ -31,8 +31,10 @@ _FILE_ANU="ShotMg"
 _FILE_RES="${_FILE_NAME}_${_FILE_ANU}.$_FILE_EXT"
 _PNG=".buff.png"
 
+_MODE="light" # default
+
 # Tag setup
-_TAG_FG="#000000"
+_TAG_FG="#0e1419"
 _TAG_BG="none"
 _TAG_SIZE=13
 _TAG_GRAVITY="Northwest"
@@ -44,7 +46,12 @@ _TAG_FONT="Iosevka-Mayukai-Medium-Nerd-Font-Complete"
 
 # Shadow setup
 _SHADOW_SIZE="50x10+0+10"
+_SHADOW_COLOR="#000000"
 
+# Border setup
+_BORDER_COLOR="#ffffff"
+
+# user option
 [[ ${_OPSI_USER[*]} =~ "--notag" ]] ||
   [[ ${_OPSI_USER[*]} =~ "-c" ]] &&
   _IS_TAG=false || _IS_TAG=true
@@ -61,7 +68,7 @@ if [[ ${_OPSI_USER[*]} =~ "--usertag" ]] ||
     _USER_TAG="$(echo $_usertag)"
   fi
 else
-  _TAG_FROM="default"
+  _TAG_FROM="default tag"
   _USER_TAG="$_TAG_DEFAULT"
 fi
 
@@ -71,14 +78,10 @@ fi
 
 [[ ${_OPSI_USER[*]} =~ "--dark" ]] ||
   [[ ${_OPSI_USER[*]} =~ "-d" ]]   &&
-  _MODE="dark" || _MODE="light"
+  _MODE="dark" _TAG_FG="#61AFEF"
 
 [[ $_MODE == "dark" ]] &&
-  _BORDER_COLOR="#0e1419" \
-  _SHADOW_COLOR="#61afef" ||
-  _BORDER_COLOR="#ffffff" \
-  _SHADOW_COLOR="#000000"
-
+  _BORDER_COLOR="#0e1419" _SHADOW_COLOR="#61afef"
 
 _apani="
  $_PROG v$_VERSION
@@ -107,10 +110,10 @@ _apani_opsi="
 "
 
 _help_() {
-  echo -e "\
-    $_apani\
-    $_apani_cara_pakai\
-    $_apani_opsi\
+  echo -e "            \
+    $_apani            \
+    $_apani_cara_pakai \
+    $_apani_opsi       \
     $_apani_contoh"
 }
 
@@ -162,20 +165,25 @@ _convert_() {
     sleep 0.2
 
     echo -n "rounded corner... " 
-    $_IS_ROUNDED && _rounded_corner_ &&
-      echo yes || echo no
+    $_IS_ROUNDED       &&
+      echo yes         &&
+      _rounded_corner_ ||
+      echo no
 
     _shadow_
     sleep 0.1
     _border_
 
     echo -n "adding tag... "
-    $_IS_TAG && _tag_ && echo "yes ($_TAG_FROM)" ||
+    $_IS_TAG                  &&
+      echo "yes ($_TAG_FROM)" &&
+      _tag_                   ||
       echo no
 
     echo final convert...
     sleep 0.1
     convert $_PNG "$_FILE_RES"
+    sleep 0.1
     rm $_PNG
   }
 }
@@ -183,20 +191,20 @@ _convert_() {
 main() {
   if [[ "$1" == "" ]]; then
     _help_ && exit 1;
-  elif [[ $1 =~ [-]* ]]; then
+  elif [[ -f $_FILE ]]; then
+    _convert_  &&
+      _result_ ||
+      ( echo -e "Convert failed :("; exit 1; )
+  else
+    [[ ! -f $_FILE ]]                  &&
+      [[ ! ${_OPTIONS[*]} =~ $_FILE ]] &&
+      _nofile_ $_FILE                  &&
+      exit 1
     case "$1" in
       -h|--help    ) _help_              ;;
       -v|--version ) _version_           ;;
       -*           ) _unknownarg_ $_FILE ;;
-      *            ) _convert_ $_FILE    &&
-        _result_ ||
-        ( echo -e "Convert failed :("; exit 1; )
-        ;;
     esac
-    [[ ! -f $_FILE ]]             &&
-      [[ ${_OPTIONS[*]} =~ $_FILE ]] &&
-      _nofile_ $_FILE             &&
-      exit 1;
   fi
 }
 
