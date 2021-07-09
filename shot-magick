@@ -14,7 +14,9 @@ _VERSION="0.2-beta"
 _PROG="shot-magick"
 _GITHUB="https://github.com/annzc/shot-magick"
 
-_OPTIONS=( \
+_OPTIONS=(         \
+  '-h' '--help'    \
+  '-v' '--version' \
   '-r' '--rounded' \
   '-d' '--dark'    \
   '-t' '--usertag' \
@@ -25,8 +27,9 @@ _OPTIONS=( \
 _OPSI_USER=( "$2" "$3" "$4" "$5" )
 
 _FILE="$1"
-_FILE_EXT=$(echo $_FILE | awk -F "." '{print $NF}')
-_FILE_NAME=$(echo $_FILE | sed "s/.$_FILE_EXT$//")
+_FUCC=$(echo $1 | sed 's/[ ]*/WTF/g')
+_FILE_EXT=$(echo "$1" | awk -F "." '{print $NF}')
+_FILE_NAME=$(echo "$1" | sed "s/.$_FILE_EXT$//")
 _FILE_ANU="ShotMg"
 _FILE_RES="${_FILE_NAME}_${_FILE_ANU}.$_FILE_EXT"
 _PNG=".buff.png"
@@ -51,7 +54,11 @@ _SHADOW_COLOR="#000000"
 # Border setup
 _BORDER_COLOR="#ffffff"
 
-# user option
+# user options
+#[[ ${_OPSI_USER[*]} =~ "-f" ]] ||
+#  [[ ${_OPSI_USER[*]} =~ "--file" ]] &&
+#  for v in ${_OPSI_USER[@]}
+
 [[ ${_OPSI_USER[*]} =~ "--notag" ]] ||
   [[ ${_OPSI_USER[*]} =~ "-c" ]] &&
   _IS_TAG=false || _IS_TAG=true
@@ -78,7 +85,7 @@ fi
 
 [[ ${_OPSI_USER[*]} =~ "--dark" ]] ||
   [[ ${_OPSI_USER[*]} =~ "-d" ]]   &&
-  _MODE="dark" _TAG_FG="#61AFEF"
+  _MODE="dark" _TAG_FG="#61afef"
 
 [[ $_MODE == "dark" ]] &&
   _BORDER_COLOR="#0e1419" _SHADOW_COLOR="#61afef"
@@ -109,6 +116,10 @@ _apani_opsi="
   -c [--notag]      - tidak ada tag
 "
 
+_setup_() {
+  echo
+}
+
 _help_() {
   echo -e "            \
     $_apani            \
@@ -118,51 +129,49 @@ _help_() {
 }
 
 _version_() {
-  echo
-  echo -e "$_PROG v$_VERSI\n${O}Github: $_GITHUB"
-  echo
+  echo -e "
+$_PROG v$_VERSION\n${O}Github: $_GITHUB
+  "
 }
 
-_unknownarg_() {
-  [[ ${_OPTIONS[*]} =~ "$1" ]] &&
-  case "$1" in
+_unknown_() {
+  [[ ${_OPTIONS[*]} =~ "$_FILE" ]] &&
+  case "$_FILE" in
     -|--)
-      echo -e "tidak ditemukan argumen '$1'. lihat '--help'"
-      exit 1
+      echo -e "tidak ditemukan argumen '$_FILE'. lihat --help"
       ;;
     -*)
       echo -e "penggunaan salah! coba dengan --help"
-      exit 1
       ;;
   esac ||
-    echo -e "tidak ditemukan argumen '$1'. lihat '--help'" &&
-    exit 1
+    echo -e "tidak ditemukan argumen '$_FILE'. lihat '--help'"
 }
 
 _nofile_() {
-  echo -e "file '$1' tidak dapat ditemukan";
-  exit 1;
+  echo -e "file '$_FILE' tidak dapat ditemukan"
 }
 
 _result_() {
   echo -e "
   Details~~~
 
-  Nama File  : $_FILE
-  Rounded    : $_IS_ROUNDED
-  Mode       : $_MODE
-  Tag        : $($_IS_TAG && echo $_USER_TAG || echo notag)
-  File Hasil : $_FILE_RES
-  " | sed 's/^[ \t]*//g'
+  {
+  \t'file'    : '$_FILE'
+  \t'rounded' : '$_IS_ROUNDED'
+  \t'mode'    : '$_MODE'
+  \t'tag'     : '$($_IS_TAG && echo $_USER_TAG || echo notag)'
+  \t'result'  : '$_FILE_RES'
+  }
+  " | sed 's/^[ ]*//g'
 }
 
 _convert_() {
   {
+    cp "$_FILE" $_FUCC 2>&1
     echo
     echo converting...
-    convert "$_FILE" $_PNG
-
-    sleep 0.2
+    convert "$_FUCC" $_PNG
+    sleep 0.1
 
     echo -n "rounded corner... " 
     $_IS_ROUNDED       &&
@@ -171,7 +180,6 @@ _convert_() {
       echo no
 
     _shadow_
-    sleep 0.1
     _border_
 
     echo -n "adding tag... "
@@ -181,50 +189,72 @@ _convert_() {
       echo no
 
     echo final convert...
-    sleep 0.1
     convert $_PNG "$_FILE_RES"
-    sleep 0.1
-    rm $_PNG
+
+    rm $_PNG $_FUCC
   }
 }
 
-main() {
-  if [[ "$1" == "" ]]; then
-    _help_ && exit 1;
-  elif [[ -f $_FILE ]]; then
-    _convert_  &&
-      _result_ ||
-      ( echo -e "Convert failed :("; exit 1; )
-  else
-    [[ ! -f $_FILE ]]                  &&
-      [[ ! ${_OPTIONS[*]} =~ $_FILE ]] &&
-      _nofile_ $_FILE                  &&
-      exit 1
-    case "$1" in
-      -h|--help    ) _help_              ;;
-      -v|--version ) _version_           ;;
-      -*           ) _unknownarg_ $_FILE ;;
-    esac
-  fi
+_run_() {
+  _convert_ && _result_
 }
 
+_usrarg_() {
+  case "$1" in
+    -h|--help    ) _help_       ;;
+    -v|--version ) _version_    ;;
+    -*           ) _unknown_ ;;
+  esac
+}
+
+#######################################
+################ MAIN #################
+main() {
+  [ ! $1 ]                     &&
+    _help_                     &&
+    exit 1
+
+  [ -f "$_FILE" ]              &&
+    {
+      _convert_                &&
+      _result_                 ||
+      echo -e "Convert failed" &&
+      exit 1
+    }
+
+  [[ "$1" =~ -* ]]             &&
+    _usrarg_ $1                &&
+    exit 0
+  
+  _nofile_                     &&
+    exit 1
+}
+################ MAIN #################
+#######################################
+
 _rounded_corner_() {
-  convert $_PNG \
-    \( +clone  -alpha extract \
-      -draw 'fill black polygon 0,0 0,7 7,0 fill white circle 7,7 7,0' \
-      \( +clone -flip \) -compose Multiply -composite \
-      \( +clone -flop \) -compose Multiply -composite \
-    \) -alpha off -compose CopyOpacity -composite $_PNG
+  convert $_PNG                                                 \
+    \(                                                          \
+      +clone                                                    \
+      -alpha extract -draw                                      \
+      'fill black polygon 0,0 0,7 7,0 fill white circle 7,7 7,0'\
+      \( +clone -flip \)                                        \
+      -compose Multiply -composite                              \
+      \( +clone -flop \)                                        \
+      -compose Multiply -composite                              \
+    \)                                                          \
+    -alpha off                                                  \
+    -compose CopyOpacity -composite $_PNG
 }
 
 _shadow_() {
-  convert $_PNG                  \
-    \( +clone                    \
-    -background "$_SHADOW_COLOR" \
-    -shadow $_SHADOW_SIZE \)     \
-    +swap                        \
-    -background none             \
-    -layers merge                \
+  convert $_PNG                   \
+    \( +clone                     \
+    -background "$_SHADOW_COLOR"  \
+    -shadow $_SHADOW_SIZE \)      \
+    +swap                         \
+    -background none              \
+    -layers merge                 \
     +repage $_PNG
 }
 
@@ -235,14 +265,14 @@ _border_() {
 }
 
 _tag_() {
-  echo -en "  $_USER_TAG  "    |
-    convert     $_PNG          \
-    -gravity    $_TAG_GRAVITY  \
-    -pointsize  $_TAG_SIZE     \
-    -fill       $_TAG_FG       \
-    -undercolor $_TAG_BG       \
-    -font       $_TAG_FONT     \
-    -annotate   $_TAG_ANNOTATE \
+  echo -en "  $_USER_TAG  "       |
+    convert     $_PNG             \
+    -gravity    $_TAG_GRAVITY     \
+    -pointsize  $_TAG_SIZE        \
+    -fill       $_TAG_FG          \
+    -undercolor $_TAG_BG          \
+    -font       $_TAG_FONT        \
+    -annotate   $_TAG_ANNOTATE    \
     @- $_PNG
 }
 
