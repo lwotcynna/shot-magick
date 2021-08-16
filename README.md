@@ -1,7 +1,11 @@
 # shot-magick
 Using imagemagick v7.1.0<br>
 Menghias hasil screenshot maupun gambar lainnya.
-Katanya biar mirip hasil screenshot MacOS =)
+Katanya biar mirip hasil screenshot MacOS =)<br>
+```
+! Deprecated !
+```
+Improved version ✨ -> [awesomeshot](https://xshin404.github.io/awesomeshot/index.html)
 ### Light Mode
 <img src="https://github.com/annzc/shot-magick/raw/main/img/light-mode.png" />
 
